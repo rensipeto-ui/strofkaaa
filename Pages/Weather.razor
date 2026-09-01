@@ -1,0 +1,49 @@
+﻿@page "/weather"
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<h3>Parashikimi i motit</h3>
+
+@if (forecasts == null)
+{
+    <p><em>Duke ngarkuar...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Temperatura (°C)</th>
+                <th>Kushtet</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var forecast in forecasts)
+        {
+            <tr>
+                <td>@forecast.Date.ToShortDateString()</td>
+                <td>@forecast.TemperatureC</td>
+                <td>@forecast.Summary</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // HttpClient injektohet automatikisht nga Blazor WASM
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+    }
+
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string? Summary { get; set; }
+    }
+}
